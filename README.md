@@ -25,9 +25,9 @@ Like it or not, one day I will use these tools to start my own company, it seems
 
 ## Images
 
-![Dashboard](assets/img/DashboardTab.png)
-![Log](assets/img/LogTab.png)
-![History](assets/img/HistoryTab.png)
+![Dashboard](img/DashboardTab.png)
+![Log](img/LogTab.png)
+![History](img/HistoryTab.png)
 
 
 

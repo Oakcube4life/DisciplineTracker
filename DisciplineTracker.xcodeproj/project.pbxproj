@@ -50,6 +50,11 @@
 			path = DisciplineTrackerUITests;
 			sourceTree = "<group>";
 		};
+		86081C512E62839D00C461AA /* img */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = img;
+			sourceTree = "<group>";
+		};
 /* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -85,6 +90,7 @@
 				86081C1C2E6235A000C461AA /* DisciplineTrackerUITests */,
 				86081C032E62359F00C461AA /* Products */,
 				86081C442E627D0700C461AA /* README.md */,
+				86081C512E62839D00C461AA /* img */,
 			);
 			sourceTree = "<group>";
 		};
@@ -115,6 +121,7 @@
 			);
 			fileSystemSynchronizedGroups = (
 				86081C042E62359F00C461AA /* DisciplineTracker */,
+				86081C512E62839D00C461AA /* img */,
 			);
 			name = DisciplineTracker;
 			packageProductDependencies = (
