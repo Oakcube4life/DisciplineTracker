@@ -25,9 +25,13 @@ Like it or not, one day I will use these tools to start my own company, it seems
 
 ## Images
 
-![Dashboard](img/DashboardTab.png)
-![Log](img/LogTab.png)
-![History](img/HistoryTab.png)
+### Dashboard
+<img src="img/DashboardTab.png">
 
+### Log
+<img src="img/LogTab.png">
+
+### History
+<img src="img/HistoryTab.png">
 
 
