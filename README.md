@@ -26,12 +26,12 @@ Like it or not, one day I will use these tools to start my own company, it seems
 ## Images
 
 ### Dashboard
-<img src="img/DashboardTab.png">
+<img src="img/DashboardTab.png" width="400"/>
 
 ### Log
-<img src="img/LogTab.png">
+<img src="img/LogTab.png" width="400"/>
 
 ### History
-<img src="img/HistoryTab.png">
+<img src="img/HistoryTab.png" width="400"/>
 
 
