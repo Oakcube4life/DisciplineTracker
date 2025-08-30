@@ -25,8 +25,10 @@ Like it or not, one day I will use these tools to start my own company, it seems
 
 ## Images
 
-<img src="img/DashboardTab.png" width="200" style="display:inline-block; margin-right:10px"/>
-<img src="img/LogTab.png" width="200" style="display:inline-block; margin-right:10px"/>
-<img src="img/HistoryTab.png" width="200" style="display:inline-block"/>
-
-
+<table>
+<tr>
+<td><img src="img/DashboardTab.png" width="200"/></td>
+<td><img src="img/LogTab.png" width="200"/></td>
+<td><img src="img/HistoryTab.png" width="200"/></td>
+</tr>
+</table>
