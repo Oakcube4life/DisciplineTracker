@@ -16,7 +16,7 @@ struct ContentView: View {
                     Label("Dashboard", systemImage: "chart.bar")
                 }
 
-            DailyLogView()
+            LogView()
                 .tabItem {
                     Label("Log", systemImage: "checkmark.circle")
                 }
@@ -29,107 +29,8 @@ struct ContentView: View {
     }
 }
 
-struct DailyLogData: Identifiable {
-    let id = UUID()
-    let date: Date
-    let totalScore: Int
-}
-
-// Shared sample data
-let sampleLogs: [DailyLogData] = [
-    DailyLogData(date: Date().addingTimeInterval(-4*86400), totalScore: 85),
-    DailyLogData(date: Date().addingTimeInterval(-3*86400), totalScore: 70),
-    DailyLogData(date: Date().addingTimeInterval(-2*86400), totalScore: 90),
-    DailyLogData(date: Date().addingTimeInterval(-1*86400), totalScore: 95),
-    DailyLogData(date: Date(), totalScore: 60)
-]
-
-struct DailyLogView: View {
-    @State private var nutrition: Double = 0
-    @State private var sleep: Double = 0
-    @State private var physical: Double = 0
-    @State private var educational: Double = 0
-    @State private var financial: Double = 0
-    
-    var totalScore: Int {
-        Int(nutrition + sleep + physical + educational + financial)
-    }
-    
-    var body: some View {
-        NavigationView {
-            Form {
-                VStack(alignment: .leading) {
-                    Text("Nutrition: \(Int(nutrition))")
-                    Slider(value: $nutrition, in: 0...20, step: 1)
-                        .accentColor(.green)
-                }.padding(.vertical)
-                
-                VStack(alignment: .leading) {
-                    Text("Sleep: \(Int(sleep))")
-                    Slider(value: $sleep, in: 0...20, step: 1)
-                        .accentColor(.blue)
-                }.padding(.vertical)
-                
-                VStack(alignment: .leading) {
-                    Text("Physical: \(Int(physical))")
-                    Slider(value: $physical, in: 0...20, step: 1)
-                        .accentColor(.red)
-                }.padding(.vertical)
-                
-                VStack(alignment: .leading) {
-                    Text("Educational: \(Int(educational))")
-                    Slider(value: $educational, in: 0...20, step: 1)
-                        .accentColor(.orange)
-                }.padding(.vertical)
-                
-                VStack(alignment: .leading) {
-                    Text("Financial: \(Int(financial))")
-                    Slider(value: $financial, in: 0...20, step: 1)
-                        .accentColor(.purple)
-                }.padding(.vertical)
-                
-                Text("Todays Score: \(totalScore)")
-                    .font(.headline)
-                    .padding(.top)
-                
-                Button(action: {
-                    print("Daily log saved: \(totalScore) points")
-                    // Future: Save to persistence here
-                }) {
-                    Text("Save Log")
-                        .frame(maxWidth: .infinity)
-                        .padding()
-                        .background(Color.accentColor)
-                        .foregroundColor(.white)
-                        .cornerRadius(10)
-                }
-                .padding(.top)
-            }
-            .navigationTitle("Daily Log")
-        }
-    }
-}
-
 struct DashboardView: View {
-    var totalPoints: Int {
-        sampleLogs.reduce(0) { $0 + $1.totalScore }
-    }
-    
-    var averagePoints: Double {
-        sampleLogs.isEmpty ? 0 : Double(totalPoints) / Double(sampleLogs.count)
-    }
-    
-    var currentStreak: Int {
-        var streak = 0
-        for log in sampleLogs.reversed() {
-            if log.totalScore > 0 {
-                streak += 1
-            } else {
-                break
-            }
-        }
-        return streak
-    }
+    @EnvironmentObject var logStore: LogStore
     
     var body: some View {
         NavigationView {
@@ -140,7 +41,7 @@ struct DashboardView: View {
                     VStack {
                         Text("Total Points")
                             .font(.headline)
-                        Text("\(totalPoints)")
+                        Text("\(totalPoints())")
                             .font(.largeTitle)
                             .bold()
                     }
@@ -149,7 +50,7 @@ struct DashboardView: View {
                     VStack {
                         Text("Current Streak")
                             .font(.headline)
-                        Text("\(currentStreak) days")
+                        Text("\(currentStreak()) days")
                             .font(.title)
                             .foregroundColor(.green)
                     }
@@ -158,39 +59,49 @@ struct DashboardView: View {
                     VStack {
                         Text("Average Points")
                             .font(.headline)
-                        Text(String(format: "%.1f", averagePoints))
+                        Text(String(format: "%.1f", averagePoints()))
                             .font(.title)
                             .foregroundColor(.blue)
                     }
                     
                     VStack(alignment: .leading) {
-                        Text("Points Over Time")
-                            .font(.headline)
-                        
-                        Chart {
-                            // Daily logs line
-                            ForEach(sampleLogs) { log in
-                                LineMark(
-                                    x: .value("Date", log.date),
-                                    y: .value("Total Points", log.totalScore)
-                                )
-                                .foregroundStyle(.blue)
-                                .symbol(Circle())
+                        if logStore.logs.isEmpty {
+                            Text("Log data to view graph")
+                                .foregroundColor(.gray)
+                                .italic()
+                                .frame(height: 200)
+                                .frame(maxWidth: .infinity)
+                                .background(Color(white: 0.95))
+                                .cornerRadius(10)
+                                .padding(.top)
+                        } else {
+                            Chart {
+                                
+                                
+                                ForEach(logStore.logs) { log in
+                                    LineMark(
+                                        x: .value("Date", log.date),
+                                        y: .value("Total Points", log.totalPoints)
+                                    )
+                                    .foregroundStyle(.blue)
+                                    .symbol(Circle())
+                                }
+                                
+                                // Average line, only if there is data
+                                if !logStore.logs.isEmpty {
+                                    RuleMark(y: .value("Average Points", averagePoints()))
+                                        .foregroundStyle(.black)
+                                        .lineStyle(StrokeStyle(lineWidth: 2, dash: [5]))
+                                }
                             }
-                            
-                            // Average Line
-                            RuleMark(y: .value("Average Points", averagePoints))
-                                .foregroundStyle(.black)
-                                .lineStyle(StrokeStyle(lineWidth: 2, dash: [5]))
+                            .frame(height: 200)
                         }
-                        .frame(height: 200)
                     }
                     .padding(.top)
-
                     
-                    // Motivational text
+                    // Motivational text TODO: add more of these
                     VStack {
-                        if currentStreak >= 5 {
+                        if currentStreak() >= 5 {
                             Text("🔥 Keep it up! You're on fire!")
                                 .font(.title3)
                                 .multilineTextAlignment(.center)
@@ -208,33 +119,136 @@ struct DashboardView: View {
             .navigationTitle("Dashboard")
         }
     }
+    
+    private func averagePoints() -> Double {
+        guard !logStore.logs.isEmpty else { return 0 }
+        let total = logStore.logs.map { $0.totalPoints }.reduce(0, +)
+        return total / Double(logStore.logs.count)
+    }
+    
+    private func totalPoints() -> Int {
+        let total = logStore.logs.map { $0.totalPoints }.reduce(0, +)
+        return Int(total)
+    }
+    
+    private func currentStreak() -> Int {
+        // Super basic streak counter
+        let sorted = logStore.logs.sorted(by: { $0.date > $1.date })
+        guard let mostRecent = sorted.first else { return 0 }
+        
+        var streak = 1
+        var prevDate = mostRecent.date
+        
+        for log in sorted.dropFirst() {
+            if Calendar.current.isDate(log.date, inSameDayAs: Calendar.current.date(byAdding: .day, value: -1, to: prevDate)!) {
+                streak += 1
+                prevDate = log.date
+            } else {
+                break
+            }
+        }
+        
+        return streak
+    }
 }
 
-struct HistoryView: View {
-    // Date formatter for display
-    private var dateFormatter: DateFormatter {
-        let df = DateFormatter()
-        df.dateStyle = .medium
-        return df
+struct LogView: View {
+    @EnvironmentObject var logStore: LogStore
+    @State private var nutrition: Double = 0
+    @State private var sleep: Double = 0
+    @State private var physical: Double = 0
+    @State private var education: Double = 0
+    @State private var financial: Double = 0
+    
+    var totalScore: Int {
+        Int(nutrition + sleep + physical + education + financial)
     }
     
     var body: some View {
         NavigationView {
-            List(sampleLogs) { log in
-                HStack {
-                    Text(dateFormatter.string(from: log.date))
-                    Spacer()
-                    Text("\(log.totalScore) pts")
-                        .bold()
+            Form {
+                SliderView(title: "Nutrition", slideColor: .orange, value: $nutrition)
+                SliderView(title: "Sleep", slideColor: .purple, value: $sleep)
+                SliderView(title: "Physical", slideColor: .red, value: $physical)
+                SliderView(title: "Education", slideColor: .green, value: $education)
+                SliderView(title: "Financial", slideColor: .blue, value: $financial)
+                
+                Text("Todays Score: \(totalScore)")
+                    .font(.headline)
+                    .padding(.top)
+                
+                Button("Save Log") {
+                    let newLog = DailyLog(
+                        date: Date(),
+                        nutrition: nutrition,
+                        sleep: sleep,
+                        physical: physical,
+                        education: education,
+                        financial: financial
+                    )
+                    logStore.addLog(newLog)
                 }
+                .disabled(logStore.hasLog(for: Date()))
+                .frame(maxWidth: .infinity)
+                .padding()
+                .background(logStore.hasLog(for: Date()) ? Color.gray : Color.blue.opacity(0.8))
+                .foregroundColor(.white)
+                .cornerRadius(10)
             }
+            .navigationTitle("Daily Log")
+        }
+    }
+}
+
+struct SliderView: View {
+    let title: String
+    let slideColor: Color
+    @Binding var value: Double
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            Text("\(title): \(Int(value))")
+            Slider(value: $value, in: 0...20, step: 1)
+                .accentColor(slideColor)
+        }.padding(.vertical)
+    }
+}
+
+struct HistoryView: View {
+    @EnvironmentObject var logStore: LogStore
+    
+    var body: some View {
+        NavigationView {
+            List {
+                ForEach(logStore.logs.sorted(by: { $0.date > $1.date })) { log in
+                    VStack(alignment: .leading) {
+                        Text(log.date, style: .date)
+                            .font(.headline)
+                        Text("Total Points: \(log.totalPoints, specifier: "%.0f")")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                Button("Reset All Logs") {
+                    logStore.resetAllLogs()
+                }
+                .padding()
+                .disabled(logStore.logs.isEmpty)
+                .frame(maxWidth: .infinity)
+                .background(logStore.logs.isEmpty ? Color.gray : Color.red.opacity(0.8))
+                .foregroundColor(.white)
+                .cornerRadius(10)
+            }
+            
             .navigationTitle("History")
         }
     }
 }
 
+
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
+            .environmentObject(LogStore())
     }
 }
