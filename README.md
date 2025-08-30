@@ -25,13 +25,8 @@ Like it or not, one day I will use these tools to start my own company, it seems
 
 ## Images
 
-### Dashboard
-<img src="img/DashboardTab.png" width="175px"/>
-
-### Log
-<img src="img/LogTab.png" width="175px"/>
-
-### History
-<img src="img/HistoryTab.png" width="175px"/>
+<img src="img/DashboardTab.png" width="200" style="display:inline-block; margin-right:10px"/>
+<img src="img/LogTab.png" width="200" style="display:inline-block; margin-right:10px"/>
+<img src="img/HistoryTab.png" width="200" style="display:inline-block"/>
 
 
